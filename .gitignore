@@ -1,0 +1,27 @@
+# Local toolchain and downloads
+.tools/
+downloads/
+
+# Generated runtime state
+.bu80/
+
+# Build artifacts
+/bin/
+/dist/
+/bu80
+*.exe
+*.test
+*.coverprofile
+coverage.out
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
