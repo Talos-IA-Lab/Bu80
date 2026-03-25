@@ -25,5 +25,3 @@ Implemented so far:
 - `--status` rendering from persisted `.bu80/` files
 - `--list-tasks`, `--add-task`, and `--remove-task`
 - `--add-context` and `--clear-context`
-
-Implementation is still in progress. The behavioral contract remains in `GO_REIMPLEMENTATION_SPEC.md`.
