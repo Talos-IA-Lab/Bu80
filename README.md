@@ -6,7 +6,7 @@ Bu80 is a Go CLI that runs supported coding agents in an iterative loop until th
 
 The current implementation is not just a scaffold. The repository already contains the CLI entrypoint, loop runtime, persisted state helpers, agent registry, prompt generation, task/context commands, status rendering, git integration, and a test suite covering the core behaviors.
 
-<img width="821" height="1981" alt="image" src="https://github.com/user-attachments/assets/c70d4fe7-8d18-4ebb-aa8d-28a2c74db791" />
+<img width="410" height="990" alt="image" src="https://github.com/user-attachments/assets/c70d4fe7-8d18-4ebb-aa8d-28a2c74db791" />
 
 ## What Bu80 does
 
