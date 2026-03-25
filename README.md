@@ -1,11 +1,9 @@
 # Bu80
 ## Autonomus Agnostic Agent
 
-This repository now contains an in-progress Go reimplementation scaffold for Bu80.
+<img width="821" height="1981" alt="image" src="https://github.com/user-attachments/assets/c70d4fe7-8d18-4ebb-aa8d-28a2c74db791" />
 
 ## Development
-
-A local Go toolchain is installed at `./.tools/go/bin/go` for this workspace.
 
 - `make test`
 - `make build`
