@@ -47,7 +47,7 @@ func TestCurrentRotationEntryFallsBackAndWraps(t *testing.T) {
 
 func TestResolveCommandUsesEnvOverride(t *testing.T) {
 	def := Builtins()["codex"]
-	got := ResolveCommand(def, map[string]string{"RALPH_CODEX_BINARY": "/tmp/codex-custom"})
+	got := ResolveCommand(def, map[string]string{"BU80_CODEX_BINARY": "/tmp/codex-custom"})
 	if got != "/tmp/codex-custom" {
 		t.Fatalf("expected env override, got %q", got)
 	}

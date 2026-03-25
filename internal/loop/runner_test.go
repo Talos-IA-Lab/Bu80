@@ -347,7 +347,7 @@ func runGit(t *testing.T, args ...string) string {
 }
 
 func envWithScript(script string, extra ...string) map[string]string {
-	env := map[string]string{"PATH": os.Getenv("PATH"), "RALPH_CODEX_BINARY": script}
+	env := map[string]string{"PATH": os.Getenv("PATH"), "BU80_CODEX_BINARY": script}
 	for i := 0; i+1 < len(extra); i += 2 {
 		env[extra[i]] = extra[i+1]
 	}
@@ -414,8 +414,8 @@ func TestRunRotatesAgentAndModelAcrossIterations(t *testing.T) {
 		Stderr:            &bytes.Buffer{},
 		Env: map[string]string{
 			"PATH":                os.Getenv("PATH"),
-			"RALPH_CODEX_BINARY":  script,
-			"RALPH_CLAUDE_BINARY": script,
+			"BU80_CODEX_BINARY":  script,
+			"BU80_CLAUDE_BINARY": script,
 		},
 	})
 	if err != nil {
@@ -623,7 +623,7 @@ func TestRunStreamingSimplifiesClaudeJSON(t *testing.T) {
 		Stderr:            &bytes.Buffer{},
 		Env: map[string]string{
 			"PATH":                os.Getenv("PATH"),
-			"RALPH_CLAUDE_BINARY": script,
+			"BU80_CLAUDE_BINARY": script,
 		},
 	})
 	if err != nil {
@@ -657,7 +657,7 @@ func TestRunOpenCodeSetsGeneratedConfigEnv(t *testing.T) {
 		Stderr:            &bytes.Buffer{},
 		Env: map[string]string{
 			"PATH":                  os.Getenv("PATH"),
-			"RALPH_OPENCODE_BINARY": script,
+			"BU80_OPENCODE_BINARY": script,
 		},
 	})
 	if err != nil {
@@ -694,7 +694,7 @@ func TestRunDetectsOpenCodePlaceholderPluginError(t *testing.T) {
 		Stderr:            &stderr,
 		Env: map[string]string{
 			"PATH":                  os.Getenv("PATH"),
-			"RALPH_OPENCODE_BINARY": script,
+			"BU80_OPENCODE_BINARY": script,
 		},
 	})
 	if err == nil {

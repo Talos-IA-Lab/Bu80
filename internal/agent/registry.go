@@ -26,25 +26,25 @@ func Builtins() map[string]Definition {
 			Name:        "opencode",
 			DisplayName: "OpenCode",
 			Command:     "opencode",
-			EnvOverride: "RALPH_OPENCODE_BINARY",
+			EnvOverride: "BU80_OPENCODE_BINARY",
 		},
 		"claude-code": {
 			Name:        "claude-code",
 			DisplayName: "Claude Code",
 			Command:     "claude",
-			EnvOverride: "RALPH_CLAUDE_BINARY",
+			EnvOverride: "BU80_CLAUDE_BINARY",
 		},
 		"codex": {
 			Name:        "codex",
 			DisplayName: "Codex",
 			Command:     "codex",
-			EnvOverride: "RALPH_CODEX_BINARY",
+			EnvOverride: "BU80_CODEX_BINARY",
 		},
 		"copilot": {
 			Name:        "copilot",
 			DisplayName: "Copilot CLI",
 			Command:     "copilot",
-			EnvOverride: "RALPH_COPILOT_BINARY",
+			EnvOverride: "BU80_COPILOT_BINARY",
 		},
 	}
 }
