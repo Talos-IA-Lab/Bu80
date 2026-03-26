@@ -240,3 +240,15 @@ Implemented today:
 ## License
 
 This repository is licensed under the terms in [LICENSE](LICENSE).
+
+## Contributing
+
+Bu80 is open to issues and pull requests.
+
+Before contributing, read:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [SECURITY.md](SECURITY.md)
+
+Please use GitHub issues for bugs and feature requests, and report security-sensitive issues privately as described in [SECURITY.md](SECURITY.md).
