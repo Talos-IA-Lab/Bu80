@@ -6,6 +6,7 @@ downloads/
 .bu80/
 
 # Build artifacts
+cmd/bu80/bu80
 /bin/
 /dist/
 /bu80
