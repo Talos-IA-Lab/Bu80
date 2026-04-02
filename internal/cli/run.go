@@ -18,7 +18,7 @@ import (
 	"bu80/internal/taskcmd"
 )
 
-const version = "0.1.0"
+var Version = "dev"
 
 var (
 	stdout  = os.Stdout
@@ -71,7 +71,7 @@ func Run(args []string) error {
 	case opts.ShowHelp:
 		return printHelp(stdout, fs)
 	case opts.ShowVersion:
-		_, err := fmt.Fprintln(stdout, version)
+		_, err := fmt.Fprintln(stdout, Version)
 		return err
 	case opts.Status:
 		snapshot, err := statuscmd.LoadSnapshot(nowFunc())
