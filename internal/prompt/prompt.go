@@ -46,7 +46,7 @@ func RenderTemplate(template string, data Data) string {
 
 func BuildDefault(data Data) string {
 	var b strings.Builder
-	b.WriteString("You are running inside Bu80, an iterative coding loop.\n\n")
+	b.WriteString("You are in an iterative coding session.\n\n")
 	b.WriteString("Primary objective:\n")
 	b.WriteString(strings.TrimSpace(data.Prompt))
 	b.WriteString("\n\n")
@@ -81,7 +81,7 @@ func BuildDefault(data Data) string {
 
 func BuildTasks(data Data) string {
 	var b strings.Builder
-	b.WriteString("You are running inside Bu80 tasks mode. Work through .bu80/bu80-tasks.md one task at a time.\n\n")
+	b.WriteString("You are in an iterative tasks mode. Work through .loop/tasks.md one task at a time.\n\n")
 	b.WriteString("Primary objective:\n")
 	b.WriteString(strings.TrimSpace(data.Prompt))
 	b.WriteString("\n\n")
@@ -105,9 +105,9 @@ func BuildTasks(data Data) string {
 		b.WriteString(strings.TrimSpace(data.Context))
 		b.WriteString("\n")
 	}
-	b.WriteString("\nCurrent tasks (.bu80/bu80-tasks.md):\n")
+	b.WriteString("\nCurrent tasks (.loop/tasks.md):\n")
 	if strings.TrimSpace(data.Tasks) == "" {
-		b.WriteString("# Bu80 Tasks\n")
+		b.WriteString("# Tasks\n")
 	} else {
 		b.WriteString(strings.TrimRight(data.Tasks, "\n"))
 		b.WriteString("\n")

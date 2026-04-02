@@ -31,14 +31,14 @@ func TestAddInitializesTaskFile(t *testing.T) {
 		t.Fatalf("expected task file: %v", err)
 	}
 	text := string(data)
-	if !strings.Contains(text, "# Bu80 Tasks") || !strings.Contains(text, "- [ ] ship status command") {
+	if !strings.Contains(text, "# Tasks") || !strings.Contains(text, "- [ ] ship status command") {
 		t.Fatalf("unexpected file contents: %q", text)
 	}
 }
 
 func TestRemoveDeletesTopLevelTaskAndIndentedLines(t *testing.T) {
 	inTempDir(t)
-	content := "# Bu80 Tasks\n- [ ] one\n  - [x] child\n- [ ] two\n"
+	content := "# Tasks\n- [ ] one\n  - [x] child\n- [ ] two\n"
 	if err := state.WriteTasks(content); err != nil {
 		t.Fatalf("unexpected write error: %v", err)
 	}
@@ -57,7 +57,7 @@ func TestRemoveDeletesTopLevelTaskAndIndentedLines(t *testing.T) {
 
 func TestRemoveRejectsOutOfRangeIndex(t *testing.T) {
 	inTempDir(t)
-	if err := state.WriteTasks("# Bu80 Tasks\n- [ ] one\n"); err != nil {
+	if err := state.WriteTasks("# Tasks\n- [ ] one\n"); err != nil {
 		t.Fatalf("unexpected write error: %v", err)
 	}
 	if err := Remove(2); err == nil {

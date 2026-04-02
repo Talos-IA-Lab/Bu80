@@ -68,7 +68,7 @@ func DiffSnapshots(before Snapshot, after Snapshot) []string {
 	return changed
 }
 
-func AutoCommit(iteration int) error {
+func AutoCommit(iteration int, modified []string, completed bool) error {
 	status, err := gitLines("status", "--porcelain")
 	if err != nil {
 		if isNotGitRepo(err) {
@@ -82,7 +82,18 @@ func AutoCommit(iteration int) error {
 	if _, err := gitOutput("add", "-A"); err != nil {
 		return err
 	}
-	_, err = gitOutput("commit", "-m", fmt.Sprintf("Bu80 iteration %d: work in progress", iteration))
+
+	msg := fmt.Sprintf("iteration %d: work in progress", iteration)
+	if len(modified) > 0 {
+		msg = fmt.Sprintf("iteration %d: updated %s", iteration, strings.Join(modified, ", "))
+	}
+	if completed {
+		msg = "completion: " + msg
+	} else {
+		msg = msg + " (incomplete)"
+	}
+
+	_, err = gitOutput("commit", "-m", msg)
 	return err
 }
 

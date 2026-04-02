@@ -39,7 +39,7 @@ func FormatToolSummary(counts map[string]int) string {
 	for _, name := range names {
 		parts = append(parts, fmt.Sprintf("%s=%d", name, counts[name]))
 	}
-	return "[bu80] tools: " + strings.Join(parts, ", ")
+	return "[loop] tools: " + strings.Join(parts, ", ")
 }
 
 func extractClaudeText(line string) string {

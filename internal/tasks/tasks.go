@@ -106,11 +106,11 @@ func mapStatus(marker byte) (Status, bool) {
 
 func Format(tasks []Task) string {
 	if len(tasks) == 0 {
-		return "# Bu80 Tasks\n"
+		return "# Tasks\n"
 	}
 
 	var lines []string
-	lines = append(lines, "# Bu80 Tasks")
+	lines = append(lines, "# Tasks")
 	for _, task := range tasks {
 		lines = append(lines, formatTask(task, ""))
 		for _, subtask := range task.Subtasks {

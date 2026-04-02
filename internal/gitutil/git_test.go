@@ -34,11 +34,11 @@ func TestAutoCommitCommitsWhenChangesExist(t *testing.T) {
 	runGit(t, "add", "note.txt")
 	runGit(t, "commit", "-m", "initial")
 	writeFile(t, "note.txt", "two\n")
-	if err := AutoCommit(2); err != nil {
+	if err := AutoCommit(2, []string{"note.txt"}, false); err != nil {
 		t.Fatalf("auto commit: %v", err)
 	}
 	log := runGit(t, "log", "--oneline", "-n", "1")
-	if !strings.Contains(log, "Bu80 iteration 2: work in progress") {
+	if !strings.Contains(log, "iteration 2: updated note.txt (incomplete)") {
 		t.Fatalf("unexpected log: %q", log)
 	}
 }

@@ -119,7 +119,7 @@ func TestRunRecordsModifiedFiles(t *testing.T) {
 		t.Fatalf("expected history to be cleared on completion, found %q", string(histBytes))
 	}
 	log := runGit(t, "log", "--oneline", "-n", "2")
-	if strings.Contains(log, "Bu80 iteration") {
+	if strings.Contains(log, "iteration") && !strings.Contains(log, "Bu80") {
 		t.Fatalf("did not expect auto-commit when no-commit is true, log=%q", log)
 	}
 }
@@ -146,7 +146,7 @@ func TestRunAutoCommitBestEffort(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	log := runGit(t, "log", "--oneline", "-n", "2")
-	if !strings.Contains(log, "Bu80 iteration 1: work in progress") {
+	if !strings.Contains(log, "iteration 1: updated note.txt (incomplete)") {
 		t.Fatalf("expected auto-commit in log, got %q", log)
 	}
 }
@@ -171,7 +171,7 @@ func TestRunStreamingHeartbeat(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if !strings.Contains(stdout.String(), "[bu80] still working...") {
+	if !strings.Contains(stdout.String(), "[loop] still working...") {
 		t.Fatalf("expected heartbeat output, got %q", stdout.String())
 	}
 }
@@ -201,7 +201,7 @@ func TestRunAbortClearsHistory(t *testing.T) {
 
 func TestRunTaskPromiseDoesNotFinishLoop(t *testing.T) {
 	inRepo(t)
-	if err := state.WriteTasks("# Bu80 Tasks\n- [ ] one\n"); err != nil {
+	if err := state.WriteTasks("# Tasks\n- [ ] one\n"); err != nil {
 		t.Fatalf("write tasks: %v", err)
 	}
 	script := writeScript(t, "#!/bin/sh\necho '<promise>READY_FOR_NEXT_TASK</promise>'\n")
@@ -474,7 +474,7 @@ func TestRunQuestionToolPersistsPendingQuestion(t *testing.T) {
 func TestRunInjectsAnsweredQuestionsIntoContext(t *testing.T) {
 	inRepo(t)
 	now := time.Date(2026, 3, 25, 12, 0, 0, 0, time.UTC)
-	if err := state.SaveAnswer("Which config path should I use?", ".bu80/custom.json", now); err != nil {
+	if err := state.SaveAnswer("Which config path should I use?", ".loop/custom.json", now); err != nil {
 		t.Fatalf("save answer: %v", err)
 	}
 	script := writeScript(t, "#!/bin/sh\nfor last do :; done\nprintf '%s' \"$last\" > prompt.txt\necho still-running\n")
@@ -499,14 +499,14 @@ func TestRunInjectsAnsweredQuestionsIntoContext(t *testing.T) {
 		t.Fatalf("read prompt: %v", readErr)
 	}
 	got := string(promptText)
-	if !strings.Contains(got, "Answered questions:\nQ: Which config path should I use?\nA: .bu80/custom.json") {
+	if !strings.Contains(got, "Answered questions:\nQ: Which config path should I use?\nA: .loop/custom.json") {
 		t.Fatalf("expected answered-question block in prompt, got %q", got)
 	}
 	contextText, contextErr := state.ReadContext()
 	if contextErr != nil {
 		t.Fatalf("read context: %v", contextErr)
 	}
-	if !strings.Contains(contextText, "Answered questions:\nQ: Which config path should I use?\nA: .bu80/custom.json") {
+	if !strings.Contains(contextText, "Answered questions:\nQ: Which config path should I use?\nA: .loop/custom.json") {
 		t.Fatalf("expected answered-question block in persisted context, got %q", contextText)
 	}
 	questions, loadErr := state.LoadQuestions()
@@ -570,7 +570,7 @@ func TestRunStreamingShowsCompactToolSummary(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	out := stdout.String()
-	if !strings.Contains(out, "[bu80] tools: edit=1") || !strings.Contains(out, "question=1") {
+	if !strings.Contains(out, "[loop] tools: edit=1") || !strings.Contains(out, "question=1") {
 		t.Fatalf("expected compact tool summary in output, got %q", out)
 	}
 	if strings.Contains(out, "tool edit: changed file") {
@@ -602,7 +602,7 @@ func TestRunStreamingVerboseToolsPrintsRawLines(t *testing.T) {
 	if !strings.Contains(out, "tool edit: changed file") {
 		t.Fatalf("expected raw tool line in verbose mode, got %q", out)
 	}
-	if strings.Contains(out, "[bu80] tools:") {
+	if strings.Contains(out, "[loop] tools:") {
 		t.Fatalf("did not expect compact tool summary in verbose mode, got %q", out)
 	}
 }
@@ -742,7 +742,7 @@ func TestRunQuestionToolReadsInlineAnswerAndContinues(t *testing.T) {
 		MaxIterations:     3,
 		Stdout:            &stdout,
 		Stderr:            &bytes.Buffer{},
-		Stdin:             bytes.NewBufferString(".bu80/custom.json\n"),
+		Stdin:             bytes.NewBufferString(".loop/custom.json\n"),
 		Env:               envWithScript(script),
 	})
 	if err != nil {
@@ -755,7 +755,7 @@ func TestRunQuestionToolReadsInlineAnswerAndContinues(t *testing.T) {
 	if readErr != nil {
 		t.Fatalf("read prompt: %v", readErr)
 	}
-	if !strings.Contains(string(promptText), "A: .bu80/custom.json") {
+	if !strings.Contains(string(promptText), "A: .loop/custom.json") {
 		t.Fatalf("expected answered question to be injected into next prompt, got %q", string(promptText))
 	}
 	questions, loadErr := state.LoadQuestions()

@@ -243,7 +243,7 @@ func RunWithResult(opts Options) (Result, error) {
 			return Result{}, modErr
 		}
 		if !opts.NoCommit {
-			if commitErr := gitutil.AutoCommit(loopState.Iteration); commitErr != nil {
+			if commitErr := gitutil.AutoCommit(loopState.Iteration, modifiedFiles, completionDetected); commitErr != nil {
 				fmt.Fprintf(opts.Stderr, "Auto-commit failed: %v\n", commitErr)
 			}
 		}
@@ -477,7 +477,7 @@ func runHeartbeat(opts Options, getLastOutput func() time.Time, stop <-chan stru
 		select {
 		case <-ticker.C:
 			if time.Since(getLastOutput()) >= opts.HeartbeatInterval {
-				_, _ = fmt.Fprintln(opts.Stdout, "[bu80] still working...")
+				_, _ = fmt.Fprintln(opts.Stdout, "[loop] still working...")
 			}
 		case <-stop:
 			return

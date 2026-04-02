@@ -20,7 +20,7 @@ func TestSimplifyDisplayLineLeavesOtherAgentsUntouched(t *testing.T) {
 
 func TestFormatToolSummary(t *testing.T) {
 	got := FormatToolSummary(map[string]int{"question": 1, "edit": 2})
-	if got != "[bu80] tools: edit=2, question=1" {
+	if got != "[loop] tools: edit=2, question=1" {
 		t.Fatalf("unexpected tool summary: %q", got)
 	}
 }
