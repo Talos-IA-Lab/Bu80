@@ -62,14 +62,14 @@ type Options struct {
 }
 
 func Run(args []string) error {
-	opts, err := Parse(args)
+	opts, fs, err := Parse(args)
 	if err != nil {
 		return err
 	}
 
 	switch {
 	case opts.ShowHelp:
-		return printHelp(stdout)
+		return printHelp(stdout, fs)
 	case opts.ShowVersion:
 		_, err := fmt.Fprintln(stdout, version)
 		return err
@@ -98,6 +98,22 @@ func Run(args []string) error {
 		return err
 	}
 
+	cfg, err := config.Load(opts.Config)
+	if err != nil {
+		return err
+	}
+
+	questionsEnabled := true
+	if cfg.QuestionsEnabled != nil {
+		questionsEnabled = *cfg.QuestionsEnabled
+	}
+	if opts.Questions {
+		questionsEnabled = true
+	}
+	if opts.NoQuestions {
+		questionsEnabled = false
+	}
+
 	streamEnabled := true
 	if opts.NoStream {
 		streamEnabled = false
@@ -115,7 +131,7 @@ func Run(args []string) error {
 		Rotation:          opts.Rotation,
 		ConfigPath:        opts.Config,
 		NoPlugins:         opts.NoPlugins,
-		QuestionsEnabled:  !opts.NoQuestions,
+		QuestionsEnabled:  questionsEnabled,
 		VerboseTools:      opts.VerboseTools,
 		CompletionPromise: opts.CompletionPromise,
 		AbortPromise:      opts.AbortPromise,
@@ -134,7 +150,7 @@ func Run(args []string) error {
 	})
 }
 
-func Parse(args []string) (Options, error) {
+func Parse(args []string) (Options, *flag.FlagSet, error) {
 	var opts Options
 
 	fs := flag.NewFlagSet("bu80", flag.ContinueOnError)
@@ -177,7 +193,7 @@ func Parse(args []string) (Options, error) {
 	fs.BoolVar(&opts.InitConfig, "init-config", false, "init config")
 
 	if err := fs.Parse(args); err != nil {
-		return opts, err
+		return opts, fs, err
 	}
 
 	opts.PromptArgs = fs.Args()
@@ -186,10 +202,10 @@ func Parse(args []string) (Options, error) {
 	}
 
 	if err := validate(opts); err != nil {
-		return opts, err
+		return opts, fs, err
 	}
 
-	return opts, nil
+	return opts, fs, nil
 }
 
 func validate(opts Options) error {
@@ -208,9 +224,18 @@ func validate(opts Options) error {
 	return nil
 }
 
-func printHelp(w io.Writer) error {
-	_, err := fmt.Fprintln(w, "usage: bu80 <prompt> [options]")
-	return err
+func printHelp(w io.Writer, fs *flag.FlagSet) error {
+	_, err := fmt.Fprintln(w, "usage: bu80 [options] <prompt>")
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprintln(w, "\nOptions:")
+	if err != nil {
+		return err
+	}
+	fs.SetOutput(w)
+	fs.PrintDefaults()
+	return nil
 }
 
 func indexOfDoubleDash(args []string) int {

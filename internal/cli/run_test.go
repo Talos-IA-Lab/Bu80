@@ -4,17 +4,18 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"bu80/internal/config"
 )
 
 func TestParseValidatesIterationBounds(t *testing.T) {
-	_, err := Parse([]string{"--min-iterations", "3", "--max-iterations", "2", "prompt"})
+	_, _, err := Parse([]string{"--min-iterations", "3", "--max-iterations", "2", "prompt"})
 	if err == nil {
 		t.Fatal("expected invalid iteration bounds to fail")
 	}
 }
 
 func TestParseValidatesDistinctTaskPromise(t *testing.T) {
-	_, err := Parse([]string{
+	_, _, err := Parse([]string{
 		"--tasks",
 		"--completion-promise", "DONE",
 		"--task-promise", "DONE",
@@ -26,7 +27,7 @@ func TestParseValidatesDistinctTaskPromise(t *testing.T) {
 }
 
 func TestParseKeepsArgsAfterDoubleDash(t *testing.T) {
-	opts, err := Parse([]string{"prompt", "--", "--sandbox", "danger-full-access"})
+	opts, _, err := Parse([]string{"prompt", "--", "--sandbox", "danger-full-access"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -36,7 +37,7 @@ func TestParseKeepsArgsAfterDoubleDash(t *testing.T) {
 }
 
 func TestParseQuestionsDisabledByFlag(t *testing.T) {
-	opts, err := Parse([]string{"--no-questions", "prompt"})
+	opts, _, err := Parse([]string{"--no-questions", "prompt"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -61,5 +62,24 @@ func TestRunInitConfigWritesDefaultFile(t *testing.T) {
 	}
 	if !strings.Contains(string(data), "\"opencode\"") {
 		t.Fatalf("unexpected generated config: %s", string(data))
+	}
+	if !strings.Contains(string(data), "\"questions_enabled\": true") {
+		t.Fatalf("expected questions_enabled in default config: %s", string(data))
+	}
+}
+
+func TestConfigLoadQuestionsEnabled(t *testing.T) {
+	dir := t.TempDir()
+	path := dir + "/config.json"
+	if err := os.WriteFile(path, []byte(`{"questions_enabled": false}`), 0o644); err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+
+	cfg, err := config.Load(path)
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+	if cfg.QuestionsEnabled == nil || *cfg.QuestionsEnabled != false {
+		t.Fatalf("expected questions_enabled to be false, got %v", cfg.QuestionsEnabled)
 	}
 }

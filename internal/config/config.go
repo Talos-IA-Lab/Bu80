@@ -23,6 +23,27 @@ func ResolvePath(path string) string {
 	return path
 }
 
+type Config struct {
+	Agents           []map[string]any `json:"agents"`
+	QuestionsEnabled *bool            `json:"questions_enabled,omitempty"`
+}
+
+func Load(path string) (*Config, error) {
+	resolved := ResolvePath(path)
+	data, err := os.ReadFile(resolved)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return &Config{}, nil
+		}
+		return nil, err
+	}
+	var cfg Config
+	if err := json.Unmarshal(data, &cfg); err != nil {
+		return nil, err
+	}
+	return &cfg, nil
+}
+
 func InitDefaultConfig(path string) (string, error) {
 	resolved := ResolvePath(path)
 	if err := os.MkdirAll(filepath.Dir(resolved), 0o755); err != nil {
@@ -62,9 +83,11 @@ func BuildOpenCodeEnv(baseEnv map[string]string, configPath string, disablePlugi
 	return env, nil
 }
 
-func defaultAgentsConfig() map[string]any {
-	return map[string]any{
-		"agents": []map[string]any{
+func defaultAgentsConfig() *Config {
+	enabled := true
+	return &Config{
+		QuestionsEnabled: &enabled,
+		Agents: []map[string]any{
 			{"name": "codex", "type": "codex"},
 			{"name": "claude-code", "type": "claude-code"},
 			{"name": "opencode", "type": "opencode"},
