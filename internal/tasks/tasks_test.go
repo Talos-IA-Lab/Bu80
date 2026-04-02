@@ -21,7 +21,7 @@ func TestParseRecognizesTopLevelTasksAndSubtasks(t *testing.T) {
 }
 
 func TestAllCompleteRequiresAtLeastOneCheckbox(t *testing.T) {
-	if AllComplete("# Bu80 Tasks\n") {
+	if AllComplete("# Tasks\n") {
 		t.Fatal("expected empty task list to be incomplete")
 	}
 }

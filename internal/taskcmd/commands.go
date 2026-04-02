@@ -46,7 +46,7 @@ func Add(description string) error {
 		return err
 	}
 	if strings.TrimSpace(content) == "" {
-		content = "# Bu80 Tasks\n"
+		content = "# Tasks\n"
 		if !strings.HasSuffix(content, "\n") {
 			content += "\n"
 		}
@@ -112,7 +112,7 @@ func removeTopLevelTask(content string, index int) (string, bool, error) {
 	kept = append(kept, lines[end:]...)
 	result := strings.Join(trimExtraEmptyLines(kept), "\n")
 	if strings.TrimSpace(result) == "" {
-		result = "# Bu80 Tasks\n"
+		result = "# Tasks\n"
 	} else if !strings.HasSuffix(result, "\n") {
 		result += "\n"
 	}

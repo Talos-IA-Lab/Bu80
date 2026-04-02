@@ -119,12 +119,12 @@ func TestBuildTasksIncludesTaskFileAndTaskPromise(t *testing.T) {
 		Prompt:            "work task by task",
 		CompletionPromise: "COMPLETE",
 		TaskPromise:       "NEXT",
-		Tasks:             "# Bu80 Tasks\n- [ ] one\n",
+		Tasks:             "# Tasks\n- [ ] one\n",
 	})
 	if !strings.Contains(got, "Task promise: NEXT") {
 		t.Fatalf("expected task promise in prompt, got %q", got)
 	}
-	if !strings.Contains(got, "Current tasks (.bu80/bu80-tasks.md):\n# Bu80 Tasks\n- [ ] one") {
+	if !strings.Contains(got, "Current tasks (.loop/tasks.md):\n# Tasks\n- [ ] one") {
 		t.Fatalf("expected tasks file contents in prompt, got %q", got)
 	}
 }
