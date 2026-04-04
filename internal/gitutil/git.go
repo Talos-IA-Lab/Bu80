@@ -11,32 +11,72 @@ import (
 
 type Snapshot map[string]string
 
+const deletedEntryHash = "<deleted>"
+
 func CaptureSnapshot() (Snapshot, error) {
-	tracked, err := gitLines("ls-files")
+	tracked, err := gitNulFields("ls-files", "-z")
 	if err != nil {
 		if isNotGitRepo(err) {
 			return Snapshot{}, nil
 		}
 		return nil, err
 	}
-	if len(tracked) == 0 {
-		return Snapshot{}, nil
-	}
-
-	args := append([]string{"hash-object"}, tracked...)
-	hashes, err := gitLines(args...)
+	deleted, err := gitNulFields("ls-files", "--deleted", "-z")
 	if err != nil {
 		return nil, err
 	}
-	if len(hashes) != len(tracked) {
-		return nil, fmt.Errorf("git hash-object returned %d hashes for %d files", len(hashes), len(tracked))
+	untracked, err := gitNulFields("ls-files", "--others", "--exclude-standard", "-z")
+	if err != nil {
+		return nil, err
 	}
 
-	snapshot := make(Snapshot, len(tracked))
-	for i, file := range tracked {
-		snapshot[file] = hashes[i]
+	if len(tracked) == 0 && len(untracked) == 0 {
+		return Snapshot{}, nil
+	}
+
+	deletedSet := make(map[string]struct{}, len(deleted))
+	for _, file := range deleted {
+		deletedSet[file] = struct{}{}
+	}
+
+	existingTracked := make([]string, 0, len(tracked))
+	for _, file := range tracked {
+		if _, isDeleted := deletedSet[file]; isDeleted {
+			continue
+		}
+		existingTracked = append(existingTracked, file)
+	}
+
+	snapshot := make(Snapshot, len(existingTracked)+len(deleted)+len(untracked))
+	if err := appendHashes(snapshot, existingTracked); err != nil {
+		return nil, err
+	}
+	for _, file := range deleted {
+		snapshot[file] = deletedEntryHash
+	}
+	if err := appendHashes(snapshot, untracked); err != nil {
+		return nil, err
 	}
 	return snapshot, nil
+}
+
+func appendHashes(snapshot Snapshot, files []string) error {
+	if len(files) == 0 {
+		return nil
+	}
+
+	args := append([]string{"hash-object", "--"}, files...)
+	hashes, err := gitLines(args...)
+	if err != nil {
+		return err
+	}
+	if len(hashes) != len(files) {
+		return fmt.Errorf("git hash-object returned %d hashes for %d files", len(hashes), len(files))
+	}
+	for i, file := range files {
+		snapshot[file] = hashes[i]
+	}
+	return nil
 }
 
 func DetectModifiedFiles(before Snapshot) ([]string, error) {
@@ -107,6 +147,18 @@ func gitLines(args ...string) ([]string, error) {
 		return nil, nil
 	}
 	return strings.Split(trimmed, "\n"), nil
+}
+
+func gitNulFields(args ...string) ([]string, error) {
+	out, err := gitOutput(args...)
+	if err != nil {
+		return nil, err
+	}
+	out = bytes.TrimSuffix(out, []byte{0})
+	if len(out) == 0 {
+		return nil, nil
+	}
+	return strings.Split(string(out), "\x00"), nil
 }
 
 func gitOutput(args ...string) ([]byte, error) {
