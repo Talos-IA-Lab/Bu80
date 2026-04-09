@@ -28,6 +28,46 @@ func TestCaptureSnapshotAndDetectModifiedFiles(t *testing.T) {
 	}
 }
 
+func TestDetectModifiedFilesIncludesDeletedTrackedFiles(t *testing.T) {
+	inRepo(t)
+	writeFile(t, "note.txt", "one\n")
+	runGit(t, "add", "note.txt")
+	runGit(t, "commit", "-m", "initial")
+
+	before, err := CaptureSnapshot()
+	if err != nil {
+		t.Fatalf("capture snapshot: %v", err)
+	}
+	removeFile(t, "note.txt")
+	changed, err := DetectModifiedFiles(before)
+	if err != nil {
+		t.Fatalf("detect modified files: %v", err)
+	}
+	if len(changed) != 1 || changed[0] != "note.txt" {
+		t.Fatalf("unexpected changed files: %v", changed)
+	}
+}
+
+func TestDetectModifiedFilesIncludesUntrackedFiles(t *testing.T) {
+	inRepo(t)
+	writeFile(t, "tracked.txt", "one\n")
+	runGit(t, "add", "tracked.txt")
+	runGit(t, "commit", "-m", "initial")
+
+	before, err := CaptureSnapshot()
+	if err != nil {
+		t.Fatalf("capture snapshot: %v", err)
+	}
+	writeFile(t, "new.txt", "new\n")
+	changed, err := DetectModifiedFiles(before)
+	if err != nil {
+		t.Fatalf("detect modified files: %v", err)
+	}
+	if len(changed) != 1 || changed[0] != "new.txt" {
+		t.Fatalf("unexpected changed files: %v", changed)
+	}
+}
+
 func TestAutoCommitCommitsWhenChangesExist(t *testing.T) {
 	inRepo(t)
 	writeFile(t, "note.txt", "one\n")
@@ -62,8 +102,19 @@ func inRepo(t *testing.T) {
 func writeFile(t *testing.T, rel string, content string) {
 	t.Helper()
 	path := filepath.Join(".", rel)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		t.Fatalf("write file: %v", err)
+	}
+}
+
+func removeFile(t *testing.T, rel string) {
+	t.Helper()
+	path := filepath.Join(".", rel)
+	if err := os.Remove(path); err != nil {
+		t.Fatalf("remove file: %v", err)
 	}
 }
 
